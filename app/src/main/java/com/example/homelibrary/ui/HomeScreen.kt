@@ -29,7 +29,7 @@ import com.example.homelibrary.ui.viewmodel.BookViewModel
 @Composable
 fun HomeScreen(navController: NavController, bookViewModel: BookViewModel) {
     Scaffold(topBar = { TopAppBar(title = { Text("Моя Библиотека") }) }, floatingActionButton = {
-        FloatingActionButton(onClick = { navController.navigate("addEditBook") }) {
+        FloatingActionButton(onClick = { navController.navigate("addEditBook/-1") }) {
             Icon(Icons.Filled.Add, contentDescription = "Добавить книгу")
         }
     }) { innerPadding ->

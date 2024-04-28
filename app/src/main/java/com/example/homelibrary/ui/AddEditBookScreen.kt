@@ -18,7 +18,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.homelibrary.ui.viewmodel.BookViewModel
 import java.util.*
 
-val genres = listOf("Фантастика", "Роман", "Поэзия", "История", "Научная литература", "Детектив")
+val genres =
+    listOf("Фантастика", "Роман", "Поэзия", "История", "Научная литература", "Детектив", "Другое")
 
 @Composable
 fun AddEditBookScreen(
@@ -174,7 +175,6 @@ fun AddEditBookScreen(
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
