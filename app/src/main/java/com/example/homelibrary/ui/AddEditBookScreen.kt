@@ -1,6 +1,5 @@
 package com.example.homelibrary.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -8,14 +7,13 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homelibrary.model.Book
 import java.text.SimpleDateFormat
-import kotlin.random.Random
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.homelibrary.ui.viewmodel.BookViewModel
 import java.util.*
@@ -26,26 +24,22 @@ val genres = listOf("Фантастика", "Роман", "Поэзия", "Ис�
 fun AddEditBookScreen(
     navController: NavController,
     viewModel: BookViewModel = viewModel(),
-    book: Book? = null // добавлен параметр с дефолтным значением null
+    bookId: Int? = null  // Теперь правильно обрабатывается null
 ) {
+    val book by viewModel.getBookById(bookId).observeAsState()
+
     var title by remember { mutableStateOf(book?.title ?: "") }
     var author by remember { mutableStateOf(book?.author ?: "") }
     var selectedGenre by remember { mutableStateOf(book?.genre ?: genres.first()) }
     var pageCount by remember { mutableStateOf(book?.pageCount?.toString() ?: "") }
     var startDate by remember {
         mutableStateOf(book?.startDate?.let {
-            SimpleDateFormat(
-                "dd.MM.yyyy",
-                Locale.getDefault()
-            ).format(it)
+            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(it)
         } ?: "")
     }
     var endDate by remember {
         mutableStateOf(book?.endDate?.let {
-            SimpleDateFormat(
-                "dd.MM.yyyy",
-                Locale.getDefault()
-            ).format(it)
+            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(it)
         } ?: "")
     }
     var note by remember { mutableStateOf(book?.note ?: "") }

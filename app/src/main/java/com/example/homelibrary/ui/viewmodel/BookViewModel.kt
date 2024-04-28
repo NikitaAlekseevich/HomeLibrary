@@ -29,7 +29,19 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getBookById(bookId: Int): LiveData<Book> {
-        return bookDao.getBookById(bookId)
+    fun getBookById(bookId: Int?): LiveData<out Book?> {
+        return if (bookId != null) {
+            bookDao.getBookById(bookId)
+        } else {
+            MutableLiveData(null)
+        }
     }
+
+    fun deleteBook(book: Book) {
+        viewModelScope.launch {
+            bookDao.deleteBook(book)
+        }
+    }
+
+
 }
