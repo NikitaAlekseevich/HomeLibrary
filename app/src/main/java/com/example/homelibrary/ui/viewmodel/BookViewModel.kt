@@ -34,9 +34,13 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updateBook(book: Book) {
+    fun addOrUpdateBook(book: Book) {
         viewModelScope.launch {
-            bookDao.updateBook(book)
+            if (book.id == 0) {
+                bookDao.insertBook(book) // добавляем новую книгу
+            } else {
+                bookDao.updateBook(book) // обновляем существующую книгу
+            }
         }
     }
 

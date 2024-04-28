@@ -48,6 +48,14 @@ fun BodyContent(
     var searchText by remember { mutableStateOf(TextFieldValue("")) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val books = bookViewModel.books.observeAsState(listOf())
+    val searchTextState = searchText.text
+
+
+    val filteredBooks = books.value.filter {
+        it.title.contains(searchTextState, ignoreCase = true) ||
+                it.author.contains(searchTextState, ignoreCase = true) ||
+                it.genre.contains(searchTextState, ignoreCase = true)
+    }
 
     Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
@@ -72,7 +80,7 @@ fun BodyContent(
         // Проверяем, есть ли книги для отображения
         if (books.value.isNotEmpty()) {
             LazyColumn {
-                items(books.value) { book ->
+                items(filteredBooks) { book ->
                     BookItem(book, navController, bookViewModel)
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.homelibrary.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -9,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,6 +29,7 @@ fun AddEditBookScreen(
     viewModel: BookViewModel,
     bookId: Int
 ) {
+    val context = LocalContext.current
     val book by viewModel.getBookById(bookId).observeAsState()
 
     var title by remember { mutableStateOf("") }
@@ -36,6 +39,8 @@ fun AddEditBookScreen(
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
     var note by remember { mutableStateOf("") }
+
+    var toastMessage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(book) {
         book?.let {
@@ -50,6 +55,13 @@ fun AddEditBookScreen(
                 SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
             } ?: ""
             note = it.note ?: ""
+        }
+    }
+
+    LaunchedEffect(toastMessage) {
+        toastMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            toastMessage = null
         }
     }
 
@@ -119,47 +131,54 @@ fun AddEditBookScreen(
                     if (title.isNotEmpty() && author.isNotEmpty() && pageCount.isNotEmpty()) {
                         try {
                             val pageCountInt = pageCount.toInt()
-                            val startDateParsed = parseDate(startDate)
-                            val endDateParsed = parseDate(endDate)
+                            val startDateResult = parseDate(startDate)
+                            val endDateResult = parseDate(endDate)
 
-                            if (bookId != -1) {
-                                val updatedBook = book?.copy(
-                                    id = bookId,
-                                    title = title,
-                                    author = author,
-                                    genre = selectedGenre,
-                                    pageCount = pageCountInt,
-                                    startDate = startDateParsed,
-                                    endDate = endDateParsed,
-                                    note = note
-                                )
-                                if (updatedBook != null) {
-                                    viewModel.updateBook(updatedBook)
+                            if (startDateResult.isSuccess && endDateResult.isSuccess) {
+                                // Если у книги уже есть ID, обновляем её, иначе добавляем новую
+                                val newOrUpdatedBook = if (bookId != -1) {
+                                    book?.copy(
+                                        id = bookId,
+                                        title = title,
+                                        author = author,
+                                        genre = selectedGenre,
+                                        pageCount = pageCountInt,
+                                        startDate = startDateResult.getOrNull(),
+                                        endDate = endDateResult.getOrNull(),
+                                        note = note
+                                    )
+                                } else {
+                                    Book(
+                                        id = 0, // ID будет сгенерирован базой данных
+                                        title = title,
+                                        author = author,
+                                        genre = selectedGenre,
+                                        pageCount = pageCountInt,
+                                        startDate = startDateResult.getOrNull(),
+                                        endDate = endDateResult.getOrNull(),
+                                        note = note
+                                    )
                                 }
-                            } else { // Если ID нет, значит это новая книга, и мы её добавляем
-                                val newBook = Book(
-                                    title = title,
-                                    author = author,
-                                    genre = selectedGenre,
-                                    pageCount = pageCountInt,
-                                    startDate = startDateParsed,
-                                    endDate = endDateParsed,
-                                    note = note
-                                )
-                                viewModel.addBook(newBook)
+
+                                if (newOrUpdatedBook != null) {
+                                    viewModel.addOrUpdateBook(newOrUpdatedBook)
+                                }
+                                navController.navigateUp()
+                            } else {
+                                toastMessage = "Введите дату в формате dd.MM.yyyy"
                             }
-                            navController.navigateUp()
                         } catch (e: NumberFormatException) {
-                            // Обработка ошибки ввода числа страниц
+                            toastMessage = "Введите число страниц в виде числа"
                         }
                     } else {
-                        // Отображение ошибки, если обязательные поля пустые
+                        toastMessage = "Пожалуйста, заполните все обязательные поля"
                     }
                 },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Сохранить")
             }
+
 
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -175,7 +194,6 @@ fun AddEditBookScreen(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -218,13 +236,14 @@ fun GenreSelector(genres: List<String>, selectedGenre: String, onGenreSelected: 
 }
 
 
-fun parseDate(dateStr: String): Date? {
+fun parseDate(dateStr: String): Result<Date> {
     return try {
-        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(dateStr)
+        Result.success(SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(dateStr)!!)
     } catch (e: Exception) {
-        null
+        Result.failure(e)
     }
 }
+
 
 //@Composable
 //fun AddEditBookScreen(navController: NavController) {
