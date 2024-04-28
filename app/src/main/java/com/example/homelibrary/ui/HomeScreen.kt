@@ -86,10 +86,11 @@ fun BodyContent(
 
 @Composable
 fun BookItem(book: Book, navController: NavController, bookViewModel: BookViewModel) {
-    Card(modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp)
-        .clickable { navController.navigate("addEditBook/${book.id}") }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { navController.navigate("addEditBook/${book.id}") }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

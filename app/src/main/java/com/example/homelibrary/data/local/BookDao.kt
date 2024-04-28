@@ -6,6 +6,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.homelibrary.model.Book
 
 @Dao
@@ -19,6 +20,10 @@ interface BookDao {
     @Delete
     suspend fun deleteBook(book: Book)
 
+    @Update
+    suspend fun updateBook(book: Book)
+
     @Query("SELECT * FROM books WHERE id = :bookId LIMIT 1")
-    fun getBookById(bookId: Int): LiveData<Book>
+    fun getBookById(bookId: Int): LiveData<Book?>
+
 }

@@ -23,32 +23,41 @@ val genres = listOf("Фантастика", "Роман", "Поэзия", "Ис�
 @Composable
 fun AddEditBookScreen(
     navController: NavController,
-    viewModel: BookViewModel = viewModel(),
-    bookId: Int? = null  // Теперь правильно обрабатывается null
+    viewModel: BookViewModel,
+    bookId: Int
 ) {
     val book by viewModel.getBookById(bookId).observeAsState()
 
-    var title by remember { mutableStateOf(book?.title ?: "") }
-    var author by remember { mutableStateOf(book?.author ?: "") }
-    var selectedGenre by remember { mutableStateOf(book?.genre ?: genres.first()) }
-    var pageCount by remember { mutableStateOf(book?.pageCount?.toString() ?: "") }
-    var startDate by remember {
-        mutableStateOf(book?.startDate?.let {
-            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(it)
-        } ?: "")
+    var title by remember { mutableStateOf("") }
+    var author by remember { mutableStateOf("") }
+    var selectedGenre by remember { mutableStateOf(genres.first()) }
+    var pageCount by remember { mutableStateOf("") }
+    var startDate by remember { mutableStateOf("") }
+    var endDate by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
+
+    LaunchedEffect(book) {
+        book?.let {
+            title = it.title
+            author = it.author
+            selectedGenre = it.genre
+            pageCount = it.pageCount.toString()
+            startDate = it.startDate?.let { date ->
+                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
+            } ?: ""
+            endDate = it.endDate?.let { date ->
+                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
+            } ?: ""
+            note = it.note ?: ""
+        }
     }
-    var endDate by remember {
-        mutableStateOf(book?.endDate?.let {
-            SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(it)
-        } ?: "")
-    }
-    var note by remember { mutableStateOf(book?.note ?: "") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -112,17 +121,33 @@ fun AddEditBookScreen(
                             val startDateParsed = parseDate(startDate)
                             val endDateParsed = parseDate(endDate)
 
-                            val newBook = Book(
-                                title = title,
-                                author = author,
-                                genre = selectedGenre,
-                                pageCount = pageCountInt,
-                                startDate = startDateParsed,
-                                endDate = endDateParsed,
-                                note = note
-                            )
-                            viewModel.addBook(newBook)
-                            navController.navigateUp() // Возвращаемся назад после добавления
+                            if (bookId != -1) {
+                                val updatedBook = book?.copy(
+                                    id = bookId,
+                                    title = title,
+                                    author = author,
+                                    genre = selectedGenre,
+                                    pageCount = pageCountInt,
+                                    startDate = startDateParsed,
+                                    endDate = endDateParsed,
+                                    note = note
+                                )
+                                if (updatedBook != null) {
+                                    viewModel.updateBook(updatedBook)
+                                }
+                            } else { // Если ID нет, значит это новая книга, и мы её добавляем
+                                val newBook = Book(
+                                    title = title,
+                                    author = author,
+                                    genre = selectedGenre,
+                                    pageCount = pageCountInt,
+                                    startDate = startDateParsed,
+                                    endDate = endDateParsed,
+                                    note = note
+                                )
+                                viewModel.addBook(newBook)
+                            }
+                            navController.navigateUp()
                         } catch (e: NumberFormatException) {
                             // Обработка ошибки ввода числа страниц
                         }
@@ -135,11 +160,11 @@ fun AddEditBookScreen(
                 Text("Сохранить")
             }
 
+
             Spacer(modifier = Modifier.width(8.dp))
 
             Button(
                 onClick = {
-                    // Просто возвращаемся назад без сохранения изменений
                     navController.navigateUp()
                 },
                 modifier = Modifier.weight(1f)
@@ -149,6 +174,8 @@ fun AddEditBookScreen(
         }
     }
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,16 +207,15 @@ fun GenreSelector(genres: List<String>, selectedGenre: String, onGenreSelected: 
         ) {
             genres.forEach { genre ->
                 DropdownMenuItem(text = { Text(text = genre) },
-                    onClick = { 
-                    selectedText = genre
-                    onGenreSelected(genre)
-                    expanded = false    
+                    onClick = {
+                        selectedText = genre
+                        onGenreSelected(genre)
+                        expanded = false
                     })
             }
         }
     }
 }
-
 
 
 fun parseDate(dateStr: String): Date? {

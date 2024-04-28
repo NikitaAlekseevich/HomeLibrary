@@ -13,26 +13,20 @@ import com.example.homelibrary.ui.viewmodel.BookViewModel
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val bookViewModel: BookViewModel = viewModel() // Получение ViewModel
+    val bookViewModel: BookViewModel = viewModel()
 
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen(navController, bookViewModel)
         }
-        composable("addEditBook") {
-            AddEditBookScreen(navController, bookViewModel)
-        }
-        composable(
-            "addEditBook/{bookId}",
-            arguments = listOf(navArgument("bookId") {
-                type = NavType.IntType
-            })
+        composable("addEditBook/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: -1
             AddEditBookScreen(navController, bookViewModel, bookId)
         }
-        // Остальные маршруты...
     }
 }
+
 
 

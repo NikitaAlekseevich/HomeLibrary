@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HomeLibraryTheme {
-                MainScreen() // Исправленный вызов без параметров
+                MainScreen()
             }
         }
     }

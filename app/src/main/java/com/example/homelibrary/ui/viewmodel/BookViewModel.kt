@@ -12,7 +12,6 @@ import com.example.homelibrary.model.Book
 import kotlinx.coroutines.launch
 
 
-
 class BookViewModel(application: Application) : AndroidViewModel(application) {
     private val db = Room.databaseBuilder(
         application,
@@ -29,19 +28,23 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getBookById(bookId: Int?): LiveData<out Book?> {
-        return if (bookId != null) {
-            bookDao.getBookById(bookId)
-        } else {
-            MutableLiveData(null)
-        }
-    }
-
     fun deleteBook(book: Book) {
         viewModelScope.launch {
             bookDao.deleteBook(book)
         }
     }
 
+    fun updateBook(book: Book) {
+        viewModelScope.launch {
+            bookDao.updateBook(book)
+        }
+    }
 
+    fun getBookById(bookId: Int): LiveData<Book?> {
+        return if (bookId == -1) {
+            MutableLiveData(null)
+        } else {
+            bookDao.getBookById(bookId)
+        }
+    }
 }
