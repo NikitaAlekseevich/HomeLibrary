@@ -28,6 +28,9 @@ fun MainScreen() {
         composable("statistics") {
             StatisticsScreen(navController, bookViewModel)
         }
+        composable("searchBooks") {
+            SearchBooksScreen(navController, bookViewModel)
+        }
     }
 }
 

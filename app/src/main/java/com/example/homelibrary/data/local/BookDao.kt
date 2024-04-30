@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.homelibrary.model.Book
+import java.util.Date
 
 @Dao
 interface BookDao {
@@ -25,5 +26,11 @@ interface BookDao {
 
     @Query("SELECT * FROM books WHERE id = :bookId LIMIT 1")
     fun getBookById(bookId: Int): LiveData<Book?>
+
+    @Query("SELECT COUNT(*) FROM books WHERE endDate BETWEEN :start AND :end")
+    fun getBooksReadBetweenDates(start: Date, end: Date): LiveData<Int>
+
+    @Query("SELECT COUNT(*) FROM books")
+    fun getTotalBooksRead(): LiveData<Int>
 
 }
