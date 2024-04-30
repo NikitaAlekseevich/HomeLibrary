@@ -25,6 +25,9 @@ fun MainScreen() {
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: -1
             AddEditBookScreen(navController, bookViewModel, bookId)
         }
+        composable("statistics") {
+            StatisticsScreen(navController, bookViewModel)
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,11 +29,27 @@ import com.example.homelibrary.ui.viewmodel.BookViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, bookViewModel: BookViewModel) {
-    Scaffold(topBar = { TopAppBar(title = { Text("Моя Библиотека") }) }, floatingActionButton = {
-        FloatingActionButton(onClick = { navController.navigate("addEditBook/-1") }) {
-            Icon(Icons.Filled.Add, contentDescription = "Добавить книгу")
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Моя Библиотека") }) },
+        floatingActionButton = {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("statistics") },
+                    modifier = Modifier.padding(end = 16.dp)
+                ) {
+                    Icon(Icons.Default.Info, contentDescription = "Статистика")
+                }
+                FloatingActionButton(
+                    onClick = { navController.navigate("addEditBook/-1") }
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Добавить книгу")
+                }
+            }
         }
-    }) { innerPadding ->
+    ) { innerPadding ->
         BodyContent(Modifier.padding(innerPadding), navController, bookViewModel)
     }
 }
