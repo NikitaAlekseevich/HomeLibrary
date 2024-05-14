@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
+import com.example.homelibrary.data.SearchHistoryManager
 import com.example.homelibrary.data.local.AppDatabase
 import com.example.homelibrary.data.remote.OpenLibraryApi
 import com.example.homelibrary.model.ApiBook
@@ -20,8 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class BookViewModel(application: Application) : AndroidViewModel(application) {
-    private val db =
-        Room.databaseBuilder(application, AppDatabase::class.java, "library.db").build()
+    private val db = Room.databaseBuilder(application, AppDatabase::class.java, "library.db").build()
     private val bookDao = db.bookDao()
     val books: LiveData<List<Book>> = bookDao.getAllBooks()
 
@@ -34,18 +34,29 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
     private val _searchResults = MutableLiveData<List<ApiBook>>()
     val searchResults: LiveData<List<ApiBook>> = _searchResults
 
+    private val _loading = MutableLiveData<Boolean>(false)
+    val loading: LiveData<Boolean> = _loading
+
     private var lastSearchQuery: String? = null
     private val _searchError = MutableLiveData<Boolean>(false)
     val searchError: LiveData<Boolean> = _searchError
 
+    private val searchHistoryManager = SearchHistoryManager(application)
+    private val _searchHistory = MutableLiveData<List<String>>(searchHistoryManager.getSearchHistory().toList())
+    val searchHistory: LiveData<List<String>> = _searchHistory
+
     fun searchBooks(query: String) {
         lastSearchQuery = query
         _searchError.value = false
+        _loading.value = true
+        searchHistoryManager.saveQuery(query)
+        _searchHistory.value = searchHistoryManager.getSearchHistory().toList()
         api.searchBooks(query).enqueue(object : Callback<BookSearchResponse> {
             override fun onResponse(
                 call: Call<BookSearchResponse>,
                 response: Response<BookSearchResponse>
             ) {
+                _loading.value = false
                 if (response.isSuccessful && response.body() != null) {
                     _searchResults.value = response.body()?.docs?.map {
                         ApiBook(
@@ -60,6 +71,7 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onFailure(call: Call<BookSearchResponse>, t: Throwable) {
+                _loading.value = false
                 _searchError.value = true
             }
         })
@@ -67,6 +79,11 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
 
     fun retrySearch() {
         lastSearchQuery?.let { searchBooks(it) }
+    }
+
+    fun removeSearchQuery(query: String) {
+        searchHistoryManager.removeQuery(query)
+        _searchHistory.value = searchHistoryManager.getSearchHistory().toList()
     }
 
     fun deleteBook(book: Book) {

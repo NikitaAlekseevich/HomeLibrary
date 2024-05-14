@@ -12,13 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.homelibrary.ui.MainScreen
 import com.example.homelibrary.ui.theme.HomeLibraryTheme
+import com.example.homelibrary.ui.theme.ThemeManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ThemeManager.applyTheme(this)
         setContent {
             HomeLibraryTheme {
-                MainScreen()
+                Surface {
+                    MainScreen()
+                }
             }
         }
     }

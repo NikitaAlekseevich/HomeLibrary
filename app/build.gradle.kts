@@ -52,7 +52,10 @@ android {
 
 dependencies {
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.appcompat)
     val room_version = "2.6.1"
+    
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")

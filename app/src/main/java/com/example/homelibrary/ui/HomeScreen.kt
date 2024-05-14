@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,61 +15,96 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.homelibrary.R
+import com.example.homelibrary.data.ThemeSettings
 import com.example.homelibrary.model.Book
 import com.example.homelibrary.ui.viewmodel.BookViewModel
+import com.example.homelibrary.ui.viewmodel.ThemeViewModel
+import kotlinx.coroutines.launch
 
 // Экран со списком книг
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, bookViewModel: BookViewModel) {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("Моя Библиотека") }) },
-        bottomBar = {
-            BottomAppBar(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                content = {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        FloatingActionButton(
-                            onClick = { navController.navigate("statistics") },
-                            modifier = Modifier.size(48.dp)
-                        ) {
-                            Icon(painter = painterResource(id = R.drawable.ic_chart), contentDescription = "Статистика")
-                        }
-                        FloatingActionButton(
-                            onClick = { navController.navigate("addEditBook/-1") },
-                            modifier = Modifier.size(48.dp)
-                        ) {
-                            Icon(Icons.Default.Add, contentDescription = "Добавить книгу")
-                        }
-                        FloatingActionButton(
-                            onClick = { navController.navigate("searchBooks") },
-                            modifier = Modifier.size(48.dp)
-                        ) {
-                            Icon(Icons.Default.Search, contentDescription = "Поиск книг")
+fun HomeScreen(
+    navController: NavController,
+    bookViewModel: BookViewModel,
+    themeViewModel: ThemeViewModel
+) {
+    val context = LocalContext.current
+    val themeSettings = remember { ThemeSettings(context) }
+    val isDarkTheme by themeSettings.isDarkTheme.collectAsState(initial = false)
+
+    val scope = rememberCoroutineScope()
+
+    MaterialTheme(
+        colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Моя Библиотека") },
+                    actions = {
+                        IconButton(onClick = {
+                            scope.launch {
+                                themeSettings.saveThemeSetting(!isDarkTheme)
+                            }
+                        }) {
+                            Icon(
+                                painter = painterResource(
+                                    id = if (isDarkTheme) R.drawable.brightness_4 else R.drawable.brightness_7
+                                ),
+                                contentDescription = "Переключатель темы"
+                            )
                         }
                     }
-                }
-            )
+                )
+            },
+            bottomBar = {
+                BottomAppBar(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    content = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FloatingActionButton(
+                                onClick = { navController.navigate("statistics") },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_chart),
+                                    contentDescription = "Статистика"
+                                )
+                            }
+                            FloatingActionButton(
+                                onClick = { navController.navigate("addEditBook/-1") },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "Добавить книгу")
+                            }
+                            FloatingActionButton(
+                                onClick = { navController.navigate("searchBooks") },
+                                modifier = Modifier.size(48.dp)
+                            ) {
+                                Icon(Icons.Default.Search, contentDescription = "Поиск книг")
+                            }
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            BodyContent(Modifier.padding(innerPadding), navController, bookViewModel)
         }
-    ) { innerPadding ->
-        BodyContent(Modifier.padding(innerPadding), navController, bookViewModel)
     }
 }
-
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -83,7 +117,6 @@ fun BodyContent(
     val keyboardController = LocalSoftwareKeyboardController.current
     val books = bookViewModel.books.observeAsState(listOf())
     val searchTextState = searchText.text
-
 
     val filteredBooks = books.value.filter {
         it.title.contains(searchTextState, ignoreCase = true) ||

@@ -16,21 +16,23 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.homelibrary.model.Book
 import java.text.SimpleDateFormat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.homelibrary.ui.viewmodel.BookViewModel
+import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 import java.util.*
 
 val genres =
     listOf("Фантастика", "Роман", "Поэзия", "История", "Научная литература", "Детектив", "Другое")
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditBookScreen(
     navController: NavController,
-    viewModel: BookViewModel,
+    bookViewModel: BookViewModel,
+    themeViewModel: ThemeViewModel,
     bookId: Int
 ) {
     val context = LocalContext.current
-    val book by viewModel.getBookById(bookId).observeAsState()
+    val book by bookViewModel.getBookById(bookId).observeAsState()
 
     var title by remember { mutableStateOf("") }
     var author by remember { mutableStateOf("") }
@@ -65,131 +67,138 @@ fun AddEditBookScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    val isDarkTheme by themeViewModel.isDarkTheme.collectAsState(initial = false)
+
+    MaterialTheme(
+        colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
     ) {
+        Scaffold() { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
+            ) {
 
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            label = { Text("Название книги") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Название книги") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = author,
-            onValueChange = { author = it },
-            label = { Text("Автор") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = author,
+                    onValueChange = { author = it },
+                    label = { Text("Автор") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-        GenreSelector(genres, selectedGenre) { selectedGenre = it }
-        Spacer(modifier = Modifier.height(8.dp))
+                GenreSelector(genres, selectedGenre) { selectedGenre = it }
+                Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = pageCount,
-            onValueChange = { pageCount = it },
-            label = { Text("Количество страниц") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = pageCount,
+                    onValueChange = { pageCount = it },
+                    label = { Text("Количество страниц") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = startDate,
-            onValueChange = { startDate = it },
-            label = { Text("Дата начала чтения") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = startDate,
+                    onValueChange = { startDate = it },
+                    label = { Text("Дата начала чтения") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = endDate,
-            onValueChange = { endDate = it },
-            label = { Text("Дата окончания чтения") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = endDate,
+                    onValueChange = { endDate = it },
+                    label = { Text("Дата окончания чтения") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            value = note,
-            onValueChange = { note = it },
-            label = { Text("Заметка") },
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 5
-        )
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    label = { Text("Заметка") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 5
+                )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-        Row {
-            Button(
-                onClick = {
-                    if (title.isNotEmpty() && author.isNotEmpty() && pageCount.isNotEmpty()) {
-                        try {
-                            val pageCountInt = pageCount.toInt()
-                            val startDateResult = parseDate(startDate)
-                            val endDateResult = parseDate(endDate)
+                Row {
+                    Button(
+                        onClick = {
+                            if (title.isNotEmpty() && author.isNotEmpty() && pageCount.isNotEmpty()) {
+                                try {
+                                    val pageCountInt = pageCount.toInt()
+                                    val startDateResult = parseDate(startDate)
+                                    val endDateResult = parseDate(endDate)
 
-                            if (startDateResult.isSuccess && endDateResult.isSuccess) {
-                                // Если у книги уже есть ID, обновляем её, иначе добавляем новую
-                                val newOrUpdatedBook = if (bookId != -1) {
-                                    book?.copy(
-                                        id = bookId,
-                                        title = title,
-                                        author = author,
-                                        genre = selectedGenre,
-                                        pageCount = pageCountInt,
-                                        startDate = startDateResult.getOrNull(),
-                                        endDate = endDateResult.getOrNull(),
-                                        note = note
-                                    )
-                                } else {
-                                    Book(
-                                        id = 0, // ID будет сгенерирован базой данных
-                                        title = title,
-                                        author = author,
-                                        genre = selectedGenre,
-                                        pageCount = pageCountInt,
-                                        startDate = startDateResult.getOrNull(),
-                                        endDate = endDateResult.getOrNull(),
-                                        note = note
-                                    )
+                                    if (startDateResult.isSuccess && endDateResult.isSuccess) {
+                                        // Если у книги уже есть ID, обновляем её, иначе добавляем новую
+                                        val newOrUpdatedBook = if (bookId != -1) {
+                                            book?.copy(
+                                                id = bookId,
+                                                title = title,
+                                                author = author,
+                                                genre = selectedGenre,
+                                                pageCount = pageCountInt,
+                                                startDate = startDateResult.getOrNull(),
+                                                endDate = endDateResult.getOrNull(),
+                                                note = note
+                                            )
+                                        } else {
+                                            Book(
+                                                id = 0, // ID будет сгенерирован базой данных
+                                                title = title,
+                                                author = author,
+                                                genre = selectedGenre,
+                                                pageCount = pageCountInt,
+                                                startDate = startDateResult.getOrNull(),
+                                                endDate = endDateResult.getOrNull(),
+                                                note = note
+                                            )
+                                        }
+
+                                        if (newOrUpdatedBook != null) {
+                                            bookViewModel.addOrUpdateBook(newOrUpdatedBook)
+                                        }
+                                        navController.navigateUp()
+                                    } else {
+                                        toastMessage = "Введите дату в формате dd.MM.yyyy"
+                                    }
+                                } catch (e: NumberFormatException) {
+                                    toastMessage = "Введите число страниц в виде числа"
                                 }
-
-                                if (newOrUpdatedBook != null) {
-                                    viewModel.addOrUpdateBook(newOrUpdatedBook)
-                                }
-                                navController.navigateUp()
                             } else {
-                                toastMessage = "Введите дату в формате dd.MM.yyyy"
+                                toastMessage = "Пожалуйста, заполните все обязательные поля"
                             }
-                        } catch (e: NumberFormatException) {
-                            toastMessage = "Введите число страниц в виде числа"
-                        }
-                    } else {
-                        toastMessage = "Пожалуйста, заполните все обязательные поля"
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Сохранить")
                     }
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Сохранить")
-            }
 
+                    Spacer(modifier = Modifier.width(8.dp))
 
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Button(
-                onClick = {
-                    navController.navigateUp()
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Отмена")
+                    Button(
+                        onClick = {
+                            navController.navigateUp()
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Отмена")
+                    }
+                }
             }
         }
     }
@@ -235,7 +244,6 @@ fun GenreSelector(genres: List<String>, selectedGenre: String, onGenreSelected: 
     }
 }
 
-
 fun parseDate(dateStr: String): Result<Date> {
     return try {
         Result.success(SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).parse(dateStr)!!)
@@ -243,9 +251,3 @@ fun parseDate(dateStr: String): Result<Date> {
         Result.failure(e)
     }
 }
-
-
-//@Composable
-//fun AddEditBookScreen(navController: NavController) {
-//    Text(text = "Добавить/Редактировать книгу")
-//}
