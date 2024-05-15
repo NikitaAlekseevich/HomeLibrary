@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Моя Библиотека") },
+                    title = { Text(stringResource(id = R.string.my_library)) },
                     actions = {
                         IconButton(onClick = {
                             scope.launch {
@@ -60,7 +61,7 @@ fun HomeScreen(
                                 painter = painterResource(
                                     id = if (isDarkTheme) R.drawable.brightness_4 else R.drawable.brightness_7
                                 ),
-                                contentDescription = "Переключатель темы"
+                                contentDescription = stringResource(id = R.string.theme_switcher)
                             )
                         }
                     }
@@ -81,20 +82,20 @@ fun HomeScreen(
                             ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_chart),
-                                    contentDescription = "Статистика"
+                                    contentDescription = stringResource(id = R.string.statistics)
                                 )
                             }
                             FloatingActionButton(
                                 onClick = { navController.navigate("addEditBook/-1") },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = "Добавить книгу")
+                                Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.add_book))
                             }
                             FloatingActionButton(
                                 onClick = { navController.navigate("searchBooks") },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(Icons.Default.Search, contentDescription = "Поиск книг")
+                                Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_books))
                             }
                         }
                     }
@@ -129,14 +130,14 @@ fun BodyContent(
             value = searchText.text,
             onValueChange = { searchText = TextFieldValue(it) },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text("Поиск книг...", fontFamily = FontFamily.Monospace) },
+            placeholder = { Text(stringResource(id = R.string.search_books_placeholder), fontFamily = FontFamily.Monospace) },
             trailingIcon = {
                 if (searchText.text.isNotEmpty()) {
                     IconButton(onClick = {
                         searchText = TextFieldValue("")
                         keyboardController?.hide()
                     }) {
-                        Icon(Icons.Filled.Clear, contentDescription = "Очистить")
+                        Icon(Icons.Filled.Clear, contentDescription = stringResource(id = R.string.clear))
                     }
                 }
             },
@@ -144,7 +145,6 @@ fun BodyContent(
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Проверяем, есть ли книги для отображения
         if (books.value.isNotEmpty()) {
             LazyColumn {
                 items(filteredBooks) { book ->
@@ -153,7 +153,7 @@ fun BodyContent(
             }
         } else {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Список книг пока пуст")
+                Text(stringResource(id = R.string.book_list_empty))
             }
         }
     }
@@ -172,18 +172,18 @@ fun BookItem(book: Book, navController: NavController, bookViewModel: BookViewMo
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Название: ${book.title}", style = MaterialTheme.typography.bodyLarge)
+                Text(text = stringResource(id = R.string.book_title_template, book.title), style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Автор: ${book.author}", style = MaterialTheme.typography.bodyMedium)
-                Text(text = "Жанр: ${book.genre}", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(id = R.string.book_author_template, book.author), style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(id = R.string.book_genre_template, book.genre), style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Количество страниц: ${book.pageCount}",
+                    text = stringResource(id = R.string.book_page_count_template, book.pageCount),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
             IconButton(onClick = { bookViewModel.deleteBook(book) }) {
-                Icon(Icons.Filled.Delete, contentDescription = "Удалить книгу")
+                Icon(Icons.Filled.Delete, contentDescription = stringResource(id = R.string.delete_book))
             }
         }
     }

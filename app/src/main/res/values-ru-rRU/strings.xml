@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">Домашняя библиотека</string>
+    <string name="my_library">Моя Библиотека</string>
+    <string name="theme_switcher">Переключатель темы</string>
+    <string name="statistics">Статистика</string>
+    <string name="add_book">Добавить книгу</string>
+    <string name="search_books">Поиск книг</string>
+    <string name="search_books_placeholder">Поиск книг...</string>
+    <string name="clear">Очистить</string>
+    <string name="book_list_empty">Список книг пока пуст</string>
+    <string name="book_title">Название книги</string>
+    <string name="author">Автор</string>
+    <string name="genre">Жанр</string>
+    <string name="page_count">Количество страниц</string>
+    <string name="start_date">Дата начала</string>
+    <string name="end_date">Дата окончания</string>
+    <string name="note">Заметка</string>
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="toast_date_format">Введите дату в формате dd.MM.yyyy</string>
+    <string name="toast_page_count">Введите число страниц в виде числа</string>
+    <string name="toast_fill_fields">Пожалуйста, заполните все обязательные поля</string>
+    <!-- Book Genres -->
+    <string name="genre_fiction">Фантастика</string>
+    <string name="genre_novel">Роман</string>
+    <string name="genre_poetry">Поэзия</string>
+    <string name="genre_history">История</string>
+    <string name="genre_scientific_literature">Научная литература</string>
+    <string name="genre_detective">Детектив</string>
+    <string name="genre_other">Другое</string>
+    <!---->
+    <string name="book_title_template">Название: %1$s</string>
+    <string name="book_author_template">Автор: %1$s</string>
+    <string name="book_genre_template">Жанр: %1$s</string>
+    <string name="book_page_count_template">Количество страниц: %1$d</string>
+    <string name="delete_book">Удалить книгу</string>
+    <string name="search_books_title">Поиск книг</string>
+    <string name="back">Назад</string>
+    <string name="enter_book_title">Введите название книги</string>
+    <string name="search">Поиск</string>
+    <string name="search_history">История поиска:</string>
+    <string name="no_results">Нет результатов</string>
+    <string name="search_error">Ошибка при поиске. Попробуйте снова.</string>
+    <string name="refresh">Обновить</string>
+    <!-- Statistics -->
+    <string name="total_books">Общее количество книг в библиотеке: %1$d</string>
+    <string name="average_page_count">Среднее количество страниц в книге: %1$.2f</string>
+</resources>

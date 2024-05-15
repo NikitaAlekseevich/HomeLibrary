@@ -11,17 +11,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.homelibrary.R
 import com.example.homelibrary.model.Book
 import java.text.SimpleDateFormat
 import com.example.homelibrary.ui.viewmodel.BookViewModel
 import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 import java.util.*
 
-val genres =
-    listOf("Фантастика", "Роман", "Поэзия", "История", "Научная литература", "Детектив", "Другое")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +31,16 @@ fun AddEditBookScreen(
     themeViewModel: ThemeViewModel,
     bookId: Int
 ) {
+    val genres = listOf(
+        stringResource(R.string.genre_fiction),
+        stringResource(R.string.genre_novel),
+        stringResource(R.string.genre_poetry),
+        stringResource(R.string.genre_history),
+        stringResource(R.string.genre_scientific_literature),
+        stringResource(R.string.genre_detective),
+        stringResource(R.string.genre_other)
+    )
+
     val context = LocalContext.current
     val book by bookViewModel.getBookById(bookId).observeAsState()
 
@@ -72,7 +82,7 @@ fun AddEditBookScreen(
     MaterialTheme(
         colorScheme = if (isDarkTheme) darkColorScheme() else lightColorScheme()
     ) {
-        Scaffold() { innerPadding ->
+        Scaffold { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -83,7 +93,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = title,
                     onValueChange = { title = it },
-                    label = { Text("Название книги") },
+                    label = { Text(stringResource(R.string.book_title)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -91,7 +101,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = author,
                     onValueChange = { author = it },
-                    label = { Text("Автор") },
+                    label = { Text(stringResource(R.string.author)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -102,7 +112,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = pageCount,
                     onValueChange = { pageCount = it },
-                    label = { Text("Количество страниц") },
+                    label = { Text(stringResource(R.string.page_count)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
@@ -111,7 +121,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = startDate,
                     onValueChange = { startDate = it },
-                    label = { Text("Дата начала чтения") },
+                    label = { Text(stringResource(R.string.start_date)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -119,7 +129,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = endDate,
                     onValueChange = { endDate = it },
-                    label = { Text("Дата окончания чтения") },
+                    label = { Text(stringResource(R.string.end_date)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -127,7 +137,7 @@ fun AddEditBookScreen(
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    label = { Text("Заметка") },
+                    label = { Text(stringResource(R.string.note)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 5
                 )
@@ -174,18 +184,18 @@ fun AddEditBookScreen(
                                         }
                                         navController.navigateUp()
                                     } else {
-                                        toastMessage = "Введите дату в формате dd.MM.yyyy"
+                                        toastMessage = context.getString(R.string.toast_date_format)
                                     }
                                 } catch (e: NumberFormatException) {
-                                    toastMessage = "Введите число страниц в виде числа"
+                                    toastMessage = context.getString(R.string.toast_page_count)
                                 }
                             } else {
-                                toastMessage = "Пожалуйста, заполните все обязательные поля"
+                                toastMessage = context.getString(R.string.toast_fill_fields)
                             }
                         },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Сохранить")
+                        Text(stringResource(R.string.save))
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -196,7 +206,7 @@ fun AddEditBookScreen(
                         },
                         modifier = Modifier.weight(1f)
                     ) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             }
@@ -215,7 +225,7 @@ fun GenreSelector(genres: List<String>, selectedGenre: String, onGenreSelected: 
             value = selectedText,
             onValueChange = { },
             readOnly = true, // Поле только для чтения
-            label = { Text("Выберите жанр") },
+            label = { Text(stringResource(R.string.genre)) },
             trailingIcon = {
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(

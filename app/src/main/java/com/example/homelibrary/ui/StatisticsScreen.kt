@@ -7,8 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,8 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.homelibrary.R
 import com.example.homelibrary.ui.viewmodel.BookViewModel
 import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 
@@ -35,7 +41,8 @@ fun StatisticsScreen(
 ) {
     val allBooks = bookViewModel.books.observeAsState(initial = emptyList())
     val totalBookCount = allBooks.value.size
-    val averagePageCount = allBooks.value.map { it.pageCount }.average().takeIf { !it.isNaN() } ?: 0.0
+    val averagePageCount =
+        allBooks.value.map { it.pageCount }.average().takeIf { !it.isNaN() } ?: 0.0
 
     val isDarkTheme by themeViewModel.isDarkTheme.collectAsState(initial = false)
 
@@ -44,7 +51,16 @@ fun StatisticsScreen(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text("Статистика") })
+                TopAppBar(
+                    title = { Text(stringResource(id = R.string.statistics)) },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
+                        }
+                    })
             }
         ) { innerPadding ->
             Column(
@@ -58,7 +74,7 @@ fun StatisticsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Общее количество книг в библиотеке: $totalBookCount",
+                        text = stringResource(id = R.string.total_books, totalBookCount),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -68,12 +84,10 @@ fun StatisticsScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Среднее количество страниц в книге: ${
-                            String.format(
-                                "%.2f",
-                                averagePageCount
-                            )
-                        }",
+                        text = stringResource(
+                            id = R.string.average_page_count,
+                            averagePageCount
+                        ),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(16.dp)
                     )

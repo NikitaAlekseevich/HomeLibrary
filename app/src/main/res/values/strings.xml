@@ -1,3 +1,48 @@
 <resources>
     <string name="app_name">HomeLibrary</string>
+    <string name="my_library">My Library</string>
+    <string name="theme_switcher">Theme Switcher</string>
+    <string name="statistics">Statistics</string>
+    <string name="add_book">Add Book</string>
+    <string name="search_books">Search Books</string>
+    <string name="search_books_placeholder">Search books...</string>
+    <string name="clear">Clear</string>
+    <string name="book_list_empty">The book list is empty</string>
+    <string name="book_title">Book Title</string>
+    <string name="author">Author</string>
+    <string name="genre">Genre</string>
+    <string name="page_count">Page Count</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="note">Note</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="toast_date_format">Enter date in format dd.MM.yyyy</string>
+    <string name="toast_page_count">Enter page count as a number</string>
+    <string name="toast_fill_fields">Please fill in all required fields</string>
+    <!-- Book Genres -->
+    <string name="genre_fiction">Fiction</string>
+    <string name="genre_novel">Novel</string>
+    <string name="genre_poetry">Poetry</string>
+    <string name="genre_history">History</string>
+    <string name="genre_scientific_literature">Scientific Literature</string>
+    <string name="genre_detective">Detective</string>
+    <string name="genre_other">Other</string>
+    <!---->
+    <string name="book_title_template">Title: %1$s</string>
+    <string name="book_author_template">Author: %1$s</string>
+    <string name="book_genre_template">Genre: %1$s</string>
+    <string name="book_page_count_template">Page count: %1$d</string>
+    <string name="delete_book">Delete book</string>
+    <string name="search_books_title">Search Books</string>
+    <string name="back">Back</string>
+    <string name="enter_book_title">Enter book title</string>
+    <string name="search">Search</string>
+    <string name="search_history">Search History:</string>
+    <string name="no_results">No results</string>
+    <string name="search_error">Error during search. Please try again.</string>
+    <string name="refresh">Refresh</string>
+    <!-- Statistics -->
+    <string name="total_books">Total books in library: %1$d</string>
+    <string name="average_page_count">Average pages per book: %1$.2f</string>
 </resources>

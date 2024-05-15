@@ -13,11 +13,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.homelibrary.R
 import com.example.homelibrary.ui.viewmodel.BookViewModel
 import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 import kotlinx.coroutines.delay
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBooksScreen(
@@ -43,27 +46,35 @@ fun SearchBooksScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Поиск книг") },
+                    title = { Text(stringResource(id = R.string.search_books_title)) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = stringResource(id = R.string.back)
+                            )
                         }
                     }
                 )
             },
             content = { innerPadding ->
-                Column(modifier = Modifier
-                    .padding(innerPadding)
-                    .padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(16.dp)
+                ) {
                     TextField(
                         value = searchText,
                         onValueChange = { searchText = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Введите название книги") },
+                        label = { Text(stringResource(id = R.string.enter_book_title)) },
                         trailingIcon = {
                             if (searchText.isNotEmpty()) {
                                 IconButton(onClick = { searchText = "" }) {
-                                    Icon(Icons.Filled.Clear, contentDescription = "Очистить")
+                                    Icon(
+                                        Icons.Filled.Clear,
+                                        contentDescription = stringResource(id = R.string.clear)
+                                    )
                                 }
                             }
                         },
@@ -74,7 +85,7 @@ fun SearchBooksScreen(
                         onClick = { bookViewModel.searchBooks(searchText) },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text("Поиск")
+                        Text(stringResource(id = R.string.search))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -82,7 +93,10 @@ fun SearchBooksScreen(
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
                     }
 
-                    Text("История поиска:", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        stringResource(id = R.string.search_history),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     LazyColumn {
                         items(searchHistory) { query ->
                             Row(
@@ -99,7 +113,10 @@ fun SearchBooksScreen(
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 IconButton(onClick = { bookViewModel.removeSearchQuery(query) }) {
-                                    Icon(Icons.Default.Clear, contentDescription = "Удалить")
+                                    Icon(
+                                        Icons.Default.Clear,
+                                        contentDescription = stringResource(id = R.string.clear)
+                                    )
                                 }
                             }
                         }
@@ -118,23 +135,29 @@ fun SearchResultList(bookViewModel: BookViewModel) {
     val searchError by bookViewModel.searchError.observeAsState(initial = false)
 
     if (searchResults.isEmpty() && !searchError) {
-        Text("Нет результатов", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(id = R.string.no_results), style = MaterialTheme.typography.bodyMedium)
     } else if (searchError) {
         Column {
             Text(
-                "Ошибка при поиске. Попробуйте снова.",
+                stringResource(id = R.string.search_error),
                 style = MaterialTheme.typography.bodyMedium
             )
             Button(onClick = { bookViewModel.retrySearch() }) {
-                Text("Обновить")
+                Text(stringResource(id = R.string.refresh))
             }
         }
     } else {
         LazyColumn {
             items(searchResults) { book ->
                 Text(book.title, style = MaterialTheme.typography.bodyMedium)
-                Text("Автор: ${book.author}", style = MaterialTheme.typography.bodyMedium)
-                Text("Страниц: ${book.pageCount}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    "${stringResource(id = R.string.author)}: ${book.author}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    "${stringResource(id = R.string.page_count)}: ${book.pageCount}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     }
