@@ -1,8 +1,8 @@
 package com.example.homelibrary.model
+
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.io.Serializable
-import java.util.*
+import java.util.Date
 
 @Entity(tableName = "books")
 data class Book(
@@ -13,5 +13,5 @@ data class Book(
     val pageCount: Int,
     val startDate: Date?,
     val endDate: Date?,
-    val note: String?
+    val note: String
 )

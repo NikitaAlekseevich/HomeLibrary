@@ -1,29 +1,26 @@
 package com.example.homelibrary.ui.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.room.Room
 import com.example.homelibrary.data.SearchHistoryManager
 import com.example.homelibrary.data.local.AppDatabase
 import com.example.homelibrary.data.remote.OpenLibraryApi
+import com.example.homelibrary.data.repository.BookRepository
 import com.example.homelibrary.model.ApiBook
 import com.example.homelibrary.model.Book
 import com.example.homelibrary.model.BookSearchResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 class BookViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = Room.databaseBuilder(application, AppDatabase::class.java, "library.db").build()
+
+    private val db =
+        Room.databaseBuilder(application, AppDatabase::class.java, "library.db").build()
     private val bookDao = db.bookDao()
-    val books: LiveData<List<Book>> = bookDao.getAllBooks()
+    val books: LiveData<List<Book>> = bookDao.getAllBooks().asLiveData()
 
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://openlibrary.org/")
@@ -42,7 +39,8 @@ class BookViewModel(application: Application) : AndroidViewModel(application) {
     val searchError: LiveData<Boolean> = _searchError
 
     private val searchHistoryManager = SearchHistoryManager(application)
-    private val _searchHistory = MutableLiveData<List<String>>(searchHistoryManager.getSearchHistory().toList())
+    private val _searchHistory =
+        MutableLiveData<List<String>>(searchHistoryManager.getSearchHistory().toList())
     val searchHistory: LiveData<List<String>> = _searchHistory
 
     fun searchBooks(query: String) {

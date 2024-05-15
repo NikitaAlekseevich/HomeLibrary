@@ -46,12 +46,12 @@ fun SearchBooksScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.search_books_title)) },
+                    title = { Text(stringResource(R.string.search_books_title)) },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(
                                 Icons.Default.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back)
+                                contentDescription = stringResource(R.string.back)
                             )
                         }
                     }
@@ -67,13 +67,13 @@ fun SearchBooksScreen(
                         value = searchText,
                         onValueChange = { searchText = it },
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text(stringResource(id = R.string.enter_book_title)) },
+                        label = { Text(stringResource(R.string.enter_book_title)) },
                         trailingIcon = {
                             if (searchText.isNotEmpty()) {
                                 IconButton(onClick = { searchText = "" }) {
                                     Icon(
                                         Icons.Filled.Clear,
-                                        contentDescription = stringResource(id = R.string.clear)
+                                        contentDescription = stringResource(R.string.clear)
                                     )
                                 }
                             }
@@ -85,7 +85,7 @@ fun SearchBooksScreen(
                         onClick = { bookViewModel.searchBooks(searchText) },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Text(stringResource(id = R.string.search))
+                        Text(stringResource(R.string.search))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -94,7 +94,7 @@ fun SearchBooksScreen(
                     }
 
                     Text(
-                        stringResource(id = R.string.search_history),
+                        stringResource(R.string.search_history),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     LazyColumn {
@@ -115,7 +115,7 @@ fun SearchBooksScreen(
                                 IconButton(onClick = { bookViewModel.removeSearchQuery(query) }) {
                                     Icon(
                                         Icons.Default.Clear,
-                                        contentDescription = stringResource(id = R.string.clear)
+                                        contentDescription = stringResource(R.string.clear)
                                     )
                                 }
                             }
@@ -135,29 +135,31 @@ fun SearchResultList(bookViewModel: BookViewModel) {
     val searchError by bookViewModel.searchError.observeAsState(initial = false)
 
     if (searchResults.isEmpty() && !searchError) {
-        Text(stringResource(id = R.string.no_results), style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.no_results), style = MaterialTheme.typography.bodyMedium)
     } else if (searchError) {
         Column {
             Text(
-                stringResource(id = R.string.search_error),
+                stringResource(R.string.search_error),
                 style = MaterialTheme.typography.bodyMedium
             )
             Button(onClick = { bookViewModel.retrySearch() }) {
-                Text(stringResource(id = R.string.refresh))
+                Text(stringResource(R.string.refresh))
             }
         }
     } else {
         LazyColumn {
             items(searchResults) { book ->
-                Text(book.title, style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    "${stringResource(id = R.string.author)}: ${book.author}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    "${stringResource(id = R.string.page_count)}: ${book.pageCount}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(book.title, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "${stringResource(R.string.author)}: ${book.author}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        "${stringResource(R.string.page_count)}: ${book.pageCount}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }

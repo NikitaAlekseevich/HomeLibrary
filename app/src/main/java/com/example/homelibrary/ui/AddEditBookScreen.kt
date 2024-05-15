@@ -23,7 +23,6 @@ import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 import java.util.*
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditBookScreen(
     navController: NavController,
@@ -214,7 +213,6 @@ fun AddEditBookScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GenreSelector(genres: List<String>, selectedGenre: String, onGenreSelected: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }

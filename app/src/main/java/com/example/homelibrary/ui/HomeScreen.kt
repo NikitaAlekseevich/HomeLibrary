@@ -27,7 +27,6 @@ import com.example.homelibrary.R
 import com.example.homelibrary.data.ThemeSettings
 import com.example.homelibrary.model.Book
 import com.example.homelibrary.ui.viewmodel.BookViewModel
-import com.example.homelibrary.ui.viewmodel.ThemeViewModel
 import kotlinx.coroutines.launch
 
 // Экран со списком книг
@@ -35,8 +34,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     navController: NavController,
-    bookViewModel: BookViewModel,
-    themeViewModel: ThemeViewModel
+    bookViewModel: BookViewModel
 ) {
     val context = LocalContext.current
     val themeSettings = remember { ThemeSettings(context) }
@@ -89,13 +87,19 @@ fun HomeScreen(
                                 onClick = { navController.navigate("addEditBook/-1") },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = stringResource(id = R.string.add_book))
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = stringResource(id = R.string.add_book)
+                                )
                             }
                             FloatingActionButton(
                                 onClick = { navController.navigate("searchBooks") },
                                 modifier = Modifier.size(48.dp)
                             ) {
-                                Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_books))
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = stringResource(id = R.string.search_books)
+                                )
                             }
                         }
                     }
@@ -130,14 +134,22 @@ fun BodyContent(
             value = searchText.text,
             onValueChange = { searchText = TextFieldValue(it) },
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(stringResource(id = R.string.search_books_placeholder), fontFamily = FontFamily.Monospace) },
+            placeholder = {
+                Text(
+                    stringResource(id = R.string.search_books_placeholder),
+                    fontFamily = FontFamily.Monospace
+                )
+            },
             trailingIcon = {
                 if (searchText.text.isNotEmpty()) {
                     IconButton(onClick = {
                         searchText = TextFieldValue("")
                         keyboardController?.hide()
                     }) {
-                        Icon(Icons.Filled.Clear, contentDescription = stringResource(id = R.string.clear))
+                        Icon(
+                            Icons.Filled.Clear,
+                            contentDescription = stringResource(id = R.string.clear)
+                        )
                     }
                 }
             },
@@ -172,10 +184,19 @@ fun BookItem(book: Book, navController: NavController, bookViewModel: BookViewMo
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = stringResource(id = R.string.book_title_template, book.title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    text = stringResource(id = R.string.book_title_template, book.title),
+                    style = MaterialTheme.typography.bodyLarge
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(id = R.string.book_author_template, book.author), style = MaterialTheme.typography.bodyMedium)
-                Text(text = stringResource(id = R.string.book_genre_template, book.genre), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = stringResource(id = R.string.book_author_template, book.author),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(id = R.string.book_genre_template, book.genre),
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(id = R.string.book_page_count_template, book.pageCount),
@@ -183,7 +204,10 @@ fun BookItem(book: Book, navController: NavController, bookViewModel: BookViewMo
                 )
             }
             IconButton(onClick = { bookViewModel.deleteBook(book) }) {
-                Icon(Icons.Filled.Delete, contentDescription = stringResource(id = R.string.delete_book))
+                Icon(
+                    Icons.Filled.Delete,
+                    contentDescription = stringResource(id = R.string.delete_book)
+                )
             }
         }
     }

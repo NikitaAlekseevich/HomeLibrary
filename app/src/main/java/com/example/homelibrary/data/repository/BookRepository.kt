@@ -1,44 +1,29 @@
 package com.example.homelibrary.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.homelibrary.data.local.BookDao
-import com.example.homelibrary.data.remote.OpenLibraryApi
-import com.example.homelibrary.model.ApiBook
 import com.example.homelibrary.model.Book
-import com.example.homelibrary.model.BookSearchResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-class BookRepository(private val bookDao: BookDao, private val openLibraryApi: OpenLibraryApi) {
-    val searchResults = MutableLiveData<List<ApiBook>>()
+import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
-    fun getAllBooks(): LiveData<List<Book>> = bookDao.getAllBooks()
+class BookRepository(private val bookDao: BookDao) {
 
-    // Запрос к API для поиска книг
-    fun searchBooks(query: String) {
-        openLibraryApi.searchBooks(query).enqueue(object : Callback<BookSearchResponse> {
-            override fun onResponse(
-                call: Call<BookSearchResponse>,
-                response: Response<BookSearchResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val apiBooks = response.body()?.docs?.map { doc ->
-                        ApiBook(
-                            title = doc.title,
-                            author = doc.author?.joinToString(", ") ?: "Unknown",
-                            pageCount = doc.pageCount ?: 0
-                        )
-                    } ?: emptyList()
-                    searchResults.postValue(apiBooks)
-                } else {
-                    searchResults.postValue(emptyList())
-                }
-            }
+    val allBooks: Flow<List<Book>> = bookDao.getAllBooks()
 
-            override fun onFailure(call: Call<BookSearchResponse>, t: Throwable) {
-                searchResults.postValue(emptyList())
-            }
-        })
+    suspend fun insert(book: Book) {
+        bookDao.insertBook(book)
     }
+
+    suspend fun update(book: Book) {
+        bookDao.updateBook(book)
+    }
+
+    suspend fun delete(book: Book) {
+        bookDao.deleteBook(book)
+    }
+
+    fun getBookById(bookId: Int): LiveData<Book?> {
+        return bookDao.getBookById(bookId)
+    }
+
 }
